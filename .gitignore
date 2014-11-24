@@ -5,6 +5,7 @@ __pycache__/
 # C extensions
 *.so
 
+/IOFiles
 # Distribution / packaging
 .Python
 env/
