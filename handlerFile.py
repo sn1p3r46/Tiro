@@ -4,7 +4,7 @@ from os.path import expanduser
 import os
 
 workspace = "/Tiro/IOFiles/"
-home = expanduser("~") #home variable contains the home folder's absolute path
+home = expanduser("~") #home variable contains the user's home folder absolute path
 
 def createWorkSpace():
     if( not os.path.isdir(home+workspace)):
@@ -15,8 +15,17 @@ def createWorkSpace():
         print "File Folder is OK!"
 
 
-#Give Me Matrix From File
-def gmmff():
+#Get Matrix From File
+def gmff(filename,path=None):
+    if (path is None):
+        return np.loadtxt(home+workspace+filename)
+    elif(path==0):
+        return np.loadtxt(filename)
+        print filename
+    else:
+        if(path[len(path)-1]!="/"):
+            path+="/"
+        return np.loadtxt(path+filename)
     return 0
 
 
@@ -35,8 +44,8 @@ def grism(Size):
 
 
 #Generate Random Real Square Matrix
-def grrsm():
-    return 0
+def grrsm(Size):
+    return np.random.uniform(-100000, high=100000, size=(Size,Size))
 
 
 #############TO RUN ##############
