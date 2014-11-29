@@ -1,5 +1,6 @@
 import scipy as sp
 import numpy as np
+import time
 from os.path import expanduser
 import os
 
@@ -21,7 +22,7 @@ def gmff(filename,path=None):
         return np.loadtxt(home+workspace+filename)
     elif(path==0):
         return np.loadtxt(filename)
-        print filename
+        print filenamef
     else:
         if(path[len(path)-1]!="/"):
             path+="/"
@@ -30,17 +31,18 @@ def gmff(filename,path=None):
 
 
 #Print Matrix on File
-def pmof(Matrix,filename=None):
+def pmof(Matrix,filename=None,path=None):
     if (filename is None):
-        #s
         filename = time.strftime("%y.%m.%d-%H.%M.%S")+".out"
-    np.savetxt(home+workspace+filename,Matrix,fmt='%17.10f')
+    if (path is None):
+        path = home+workspace
+    np.savetxt(path+filename,Matrix,fmt='%17.10f')
     return 0
 
 
 #Generate Random Integer Square Matrix
 def grism(Size):
-    return np.random.randint(-1000, high=1000, size=(Size,Size))
+    return np.random.randint(-100000, high=100000, size=(Size,Size))
 
 
 #Generate Random Real Square Matrix
