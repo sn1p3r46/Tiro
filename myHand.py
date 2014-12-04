@@ -6,17 +6,33 @@ from handlerFile import *
 from os.path import expanduser
 
 
-def main():
-    print "\n###########################"
-
 
 def applySchur(SourceMatrix):
     T, Z = sp.linalg.schur(SourceMatrix)
-#   pmof(SourceMatrix,"Source.out")
-    pmof(T, "Triangular.out")
-    pmof(Z, "Unitary.out")
-    return 0
+    #pmof(SourceMatrix,"Source.out")
+    #pmof(T, "Triangular.out")
+    #pmof(Z, "Unitary.out")
+    return T,Z
 
+def getBlocks0(matrix):
+    dim = matrix.shape[0]
+    i=j=0; bb = eb = sp.ndarray(dim,sp.integer)
+    dims = sp.ndarray(dim,sp.int8); wb = sp.ndarray(dim)
+    while (i<dim):
+        if (i<dim-1 and matrix[i+1,i]!=0):
+            bb[j] = i
+            print bb[j]
+            eb[j] = i+1
+            print eb[j]
+            dims[j] = 2; wb[i] = wb[i+1]=j
+            i+=1
+        else:
+            bb[j] = eb[j] = i
+            dims[i] = 1
+            wb[i] = j
+        i+=1
+        j+=1
+    return bb,eb,dims,wb
 
 def csr0(complex_n):
     s = sp.sqrt(sp.square(complex_n.real)+sp.square(complex_n.imag)) # np.absolute()
@@ -38,7 +54,12 @@ def csr2(complex_n):
         return complex((complex_n.imag/(2*t)),t)
 
 if __name__ == "__main__":
-    h=grrsm(7)
+    h = grism(10)
+    """
+    T, Z = applySchur(h)
+    pmof(T,"BlockedMatrix.out")
     #applySchur(gmff("Source.out"))
+    """
 
     print "\nImported\n"
+    print "###########################"

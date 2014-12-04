@@ -36,13 +36,13 @@ def pmof(Matrix,filename=None,path=None):
         filename = time.strftime("%y.%m.%d-%H.%M.%S")+".out"
     if (path is None):
         path = home+workspace
-    np.savetxt(path+filename,Matrix,fmt='%17.10f')
+    np.savetxt(path+filename,Matrix,fmt='%5.0f') #%17.10f
     return 0
 
 
 #Generate Random Integer Square Matrix
 def grism(Size):
-    return np.random.randint(-100000, high=100000, size=(Size,Size))
+    return np.random.randint(-100, high=100, size=(Size,Size))
 
 
 #Generate Random Real Square Matrix
