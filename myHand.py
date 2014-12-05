@@ -14,16 +14,16 @@ def applySchur(SourceMatrix):
     #pmof(Z, "Unitary.out")
     return T,Z
 
-def getBlocks0(matrix):
+def findBlocks0(matrix):
     dim = matrix.shape[0]
-    i=j=0; bb = eb = sp.ndarray(dim,sp.integer)
+    i=j=0; eb = sp.ndarray(dim,sp.integer); bb = sp.ndarray(dim,sp.integer)
     dims = sp.ndarray(dim,sp.int8); wb = sp.ndarray(dim)
     while (i<dim):
         if (i<dim-1 and matrix[i+1,i]!=0):
             bb[j] = i
-            print bb[j]
+            print str(bb[j])+"bb"
             eb[j] = i+1
-            print eb[j]
+            print str(eb[j])+"eb"
             dims[j] = 2; wb[i] = wb[i+1]=j
             i+=1
         else:
@@ -32,7 +32,19 @@ def getBlocks0(matrix):
             wb[i] = j
         i+=1
         j+=1
-    return bb,eb,dims,wb
+    print bb; print"\n"
+    print eb; print"\n"
+    print wb; print"\n"
+    print dims; print"\n"
+    return bb,eb,dims,wb,i,j
+
+
+def getBlocks0(matrix,j):
+    a = sp.ndarray(j)
+    for i in range(0,j):
+        print matrix[bb[i]:eb[i]+1,bb[i]:eb[i]+1] #sp.append may be high cost operation
+    return a
+
 
 def csr0(complex_n):
     s = sp.sqrt(sp.square(complex_n.real)+sp.square(complex_n.imag)) # np.absolute()
