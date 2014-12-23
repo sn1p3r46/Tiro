@@ -48,8 +48,8 @@ def getBlocks0(matrix):
         b.append(matrix[bb[i]:eb[i]+1,bb[i]:eb[i]+1]) #sp.append may be high cost operation
     return b
 
-#much more simple! It Works!!! needs only matrix j(block number) and
-#ordered dims of the blockso
+#much more simple! It Works!!! needs only: matrix, j(block number) and
+#ordered dims of the blocks
 
 def getBlocks1(matrix):
     bb,eb,dims,wb,i,j = findBlocks0(matrix)
@@ -79,7 +79,6 @@ def csr0(complex_n):
     angle = np.angle(complex_n)
     return sp.sqrt(s)*(complex((sp.cos(angle*0.5)), (sp.sin(angle*0.5))))
 
-# From http://www.mathpropress.com/stan/bibliography/complexSquareRoot.pdf
 
 def csr1(complex_n):
     CMP0 = (sp.sqrt(sp.square(complex_n.real)+sp.square(complex_n.imag)))/2 #np.absolute()/2
@@ -87,7 +86,7 @@ def csr1(complex_n):
     return complex(sp.sqrt(CMP0+CMP1),sp.sign(complex_n.imag)*(sp.sqrt(CMP0-CMP1)))
 
 
-# From the book (Seems does not work properly, descover why...)
+# From the book
 
 def csr2(complex_n):
     t = sp.sqrt((sp.absolute(complex_n.real)+(sp.sqrt(sp.square(complex_n.real)+sp.square(complex_n.imag))))/2)
@@ -99,11 +98,12 @@ def csr2(complex_n):
 # De Moivre
     # -- square roots of a complex number are 2; n-roots of a square number are n
     # -- s^(1/n)* [cos((ang/2)+(2pi*k)/n) +i sin((ang/2)+(2pi*k)/n)] with k = [0...n-1]
+    # http://www-thphys.physics.ox.ac.uk/people/FrancescoHautmann/Cp4/sl_clx_11_4_cls.pdf
 
 def csr3(complex_n):
     ang = sp.angle(complex_n) # sp.arctan(a.imag/a.real) why it does not work?!?!
     r = sp.sqrt(sp.square(complex_n.real)+sp.square(complex_n.imag))
-    if (sp.cos(ang/2)>=0):
+    if (sp.sin(ang/2)>=0): #sin>0
         return sp.sqrt(r)*(complex(sp.cos(ang/2),sp.sin(ang/2)))
     else:
         return sp.sqrt(r)*(complex(sp.cos((ang/2)+sp.pi),sp.sin((ang/2)+sp.pi)))
@@ -111,6 +111,21 @@ def csr3(complex_n):
     #r1 = sp.sqrt(r)*(complex(sp.cos(ang/2),sp.sin(ang/2)))
     #r2 = sp.sqrt(r)*(complex(sp.cos((ang/2)+sp.pi),sp.sin((ang/2)+sp.pi)))
     #return r1,r2
+
+def diagRoots(matrix):
+    a = csr3(gev(matrix)).real
+    ris=sp.ndarray(shape=(2,2))
+
+    ris[0,0] = a + (1/(4*a))*(matrix[0,0] - matrix[1,1])
+    ris[1,1] = a - (1/(4*a))*(matrix[0,0] - matrix[1,1])
+    ris[0,1] = (1/(2*a))*matrix[0,1]
+    ris[1,0] = (1/(2*a))*matrix[1,0]
+    return ris
+
+def diagRoots(matrix):
+    ris = sp.ndarray(shape=matrix.shape,dtype=float)
+
+
 
 
 if __name__ == "__main__":
