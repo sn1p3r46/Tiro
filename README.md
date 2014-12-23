@@ -1,4 +1,5 @@
 Tiro
 ====
 
-Tiro Random test.. 
+"Slices" of Traineeship
+Slices of Traineeship
