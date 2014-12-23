@@ -72,7 +72,6 @@ def gev(matrix):
     return complex(x,y)
 
 
-
 # nroot = r^n(cos(ang*n) + i sin(ang*n))
 
 def csr0(complex_n):
