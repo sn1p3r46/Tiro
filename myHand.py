@@ -32,10 +32,7 @@ def findBlocks0(matrix):
             wb[i] = j
         i+=1
         j+=1
-    print bb; print"\n"
-    print eb; print"\n"
-    print wb; print"\n"
-    print dims; print"\n"
+    #print bb; print"\n",print eb; print"\n",print wb; print"\n" ,print dims; print"\n"
     return bb,eb,dims,wb,i,j #i,wb dims maybe are useless
 
 
@@ -112,18 +109,42 @@ def csr3(complex_n):
     #r2 = sp.sqrt(r)*(complex(sp.cos((ang/2)+sp.pi),sp.sin((ang/2)+sp.pi)))
     #return r1,r2
 
-def diagRoots(matrix):
-    a = csr3(gev(matrix)).real
-    ris=sp.ndarray(shape=(2,2))
+def twobytworoot(matrix):
 
-    ris[0,0] = a + (1/(4*a))*(matrix[0,0] - matrix[1,1])
-    ris[1,1] = a - (1/(4*a))*(matrix[0,0] - matrix[1,1])
-    ris[0,1] = (1/(2*a))*matrix[0,1]
-    ris[1,0] = (1/(2*a))*matrix[1,0]
+    if (matrix.shape[0]==2):
+        a = csr3(gev(matrix)).real
+        ris=sp.ndarray(shape=(2,2))
+        ris[0,0] = a + (1/(4*a))*(matrix[0,0] - matrix[1,1])
+        ris[1,1] = a - (1/(4*a))*(matrix[0,0] - matrix[1,1])
+        ris[0,1] = (1/(2*a))*matrix[0,1]
+        ris[1,0] = (1/(2*a))*matrix[1,0]
+    else:
+        print("sp.sqrt()\n")
+        print(sp.sqrt(matrix))
+        return sp.sqrt(matrix)
     return ris
 
 def diagRoots(matrix):
-    ris = sp.ndarray(shape=matrix.shape,dtype=float)
+    ris = sp.zeros(shape=matrix.shape,dtype=complex)
+    bb,eb,dims,wb,i,j = findBlocks0(matrix)
+    k=0
+    for i in range (0,j):
+        ris[k:k+dims[i],k:k+dims[i]] = twobytworoot(matrix[k:k+dims[i],k:k+dims[i]])
+        print(matrix[k:k+dims[i],k:k+dims[i]])
+        k += dims[i]
+        print k
+        print dims[i]; print '<--Dims'
+    return ris
+
+################################################################################
+"""
+def innerRoots(matrix):
+    bb,eb,dims,wb,i,j = findBlocks0(matrix)
+    for k in range():
+"""        
+
+
+################################################################################
 
 
 

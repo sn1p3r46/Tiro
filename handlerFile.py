@@ -36,7 +36,7 @@ def pmof(Matrix,filename=None,path=None):
         filename = time.strftime("%y.%m.%d-%H.%M.%S")+".out"
     if (path is None):
         path = home+workspace
-    np.savetxt(path+filename,Matrix,fmt='%5.0f') #%17.10f
+    np.savetxt(path+filename,Matrix,fmt='%8.3f') #%17.10f
     return 0
 
 
