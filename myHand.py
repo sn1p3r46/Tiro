@@ -140,8 +140,27 @@ def diagRoots(matrix):
 """
 def innerRoots(matrix):
     bb,eb,dims,wb,i,j = findBlocks0(matrix)
-    for k in range():
-"""        
+    for j in range(1,matrix.shape[0]):
+        for i in range(0,matrix.shape[0]-j):
+            print matrix[]
+            d1 =  dims[wb[i]]
+            d2 =  dims[wb[i]]
+"""
+
+def innerRoots(matrix):
+    bb,eb,dims,wb,i,j = findBlocks0(matrix)
+    for z in range(0,j):
+        for t in range(0,j-z):
+            rij = matrix[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1]
+            print rij
+            if (dims[t]==1 and dims[z]==1):
+                tempsum = 0
+                for k in range(t+1,z):
+                    tempsum += matrix[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(matrix[bb[k]:eb[k]+1,bb[z]:eb[z]+1)
+                    
+
+        print "<------------------------/n"
+
 
 
 ################################################################################
