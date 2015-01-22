@@ -4,6 +4,7 @@ from scipy import linalg
 import os
 from handlerFile import *
 from os.path import expanduser
+import pdb
 
 
 
@@ -21,9 +22,9 @@ def findBlocks0(matrix):
     while (i<dim):
         if (i<dim-1 and matrix[i+1,i]!=0):
             bb[j] = i
-            print str(bb[j])+"bb"
+            #print str(bb[j])+"bb"
             eb[j] = i+1
-            print str(eb[j])+"eb"
+            #print str(eb[j])+"eb"
             dims[j] = 2; wb[i] = wb[i+1]=j
             i+=1
         else:
@@ -110,7 +111,6 @@ def csr3(complex_n):
     #return r1,r2
 
 def twobytworoot(matrix):
-
     if (matrix.shape[0]==2):
         a = csr3(gev(matrix)).real
         ris=sp.ndarray(shape=(2,2))
@@ -119,8 +119,7 @@ def twobytworoot(matrix):
         ris[0,1] = (1/(2*a))*matrix[0,1]
         ris[1,0] = (1/(2*a))*matrix[1,0]
     else:
-        print("sp.sqrt()\n")
-        print(sp.sqrt(matrix))
+        #print(sp.sqrt(matrix))
         return sp.sqrt(matrix)
     return ris
 
@@ -130,42 +129,183 @@ def diagRoots(matrix):
     k=0
     for i in range (0,j):
         ris[k:k+dims[i],k:k+dims[i]] = twobytworoot(matrix[k:k+dims[i],k:k+dims[i]])
-        print(matrix[k:k+dims[i],k:k+dims[i]])
+        #print(matrix[k:k+dims[i],k:k+dims[i]])
         k += dims[i]
-        print k
-        print dims[i]; print '<--Dims'
+        #print k
+        #print dims[i]; print '<--Dims'
     return ris
 
 ################################################################################
-"""
-def innerRoots(matrix):
-    bb,eb,dims,wb,i,j = findBlocks0(matrix)
-    for j in range(1,matrix.shape[0]):
-        for i in range(0,matrix.shape[0]-j):
-            print matrix[]
-            d1 =  dims[wb[i]]
-            d2 =  dims[wb[i]]
-"""
 
 def innerRoots(matrix):
+    ris = diagRoots(matrix)
     bb,eb,dims,wb,i,j = findBlocks0(matrix)
-    for z in range(0,j):
+    for z in range(1,j):
         for t in range(0,j-z):
             rij = matrix[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1]
-            print rij
-            if (dims[t]==1 and dims[z]==1):
+            #print rij
+
+            #print (rij)
+            if (dims[t]==1 and dims[z+t]==1):
                 tempsum = 0
+                tempsum0 = 0
+                for k in range(t+1,z+t):
+                    tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
+                    #print ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
+                    #print("...............................")
+                    #print(tempsum)
+                    tempsum0 += selectBlock(t,k,ris).dot(selectBlock(k,z+t,ris))
+                print("Tempsum(1x1):")
+                print tempsum
+                tnoto = rij - tempsum
+                ris[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1] = tnoto/(selectBlock(t,t,ris)+selectBlock(z+t,z+t,ris))
+
+            elif (dims[t]==2 and dims[t+z]==1):
+                tempsum = sp.zeros((2,1))
                 for k in range(t+1,z):
-                    tempsum += matrix[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(matrix[bb[k]:eb[k]+1,bb[z]:eb[z]+1)
-                    
+                    tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
+                print("Tempsum(2x1):")
+                print tempsum
+                    #tempsum0 += selectBlock(t,k,ris).dot(selectBlock(k,z,ris))
+                tnoto = rij - tempsum
+                ujj = selectBlock(z+t,z+t,ris)
+                uii = selectBlock(t,t,ris)
+                sysris = sp.ndarray((2,1))
+                coeff = sp.array(uii, dtype=complex)
+                coeff[0,0] += ujj[0,0]
+                coeff[1,1] += ujj[0,0]
+                sysris = np.linalg.solve(coeff,tnoto)
+                ris[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1] = sysris
+            elif (dims[t]==1 and dims[t+z]==2):
+                tempsum = sp.zeros((1,2))
+                for k in range(t+1,z):
+                    tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
+                #pdb.set_trace()
+                print("Tempsum(1x2):")
+                print tempsum
+                tnoto = rij - tempsum
+                ujj = selectBlock(z+t,z+t,ris)
+                uii = selectBlock(t,t,ris)
+                sysris = sp.ndarray((2,1))
+                coeff = sp.zeros((2,2), dtype=complex)
+                print uii[0,0]
+                coeff[0,0] = uii[0,0] + ujj[0,0]
+                coeff[1,1] = uii[0,0] + ujj[1,1]
+                coeff[0,1] = ujj[1,0]
+                coeff[1,0] = ujj[0,1]
+                sysris = np.linalg.solve(coeff,tnoto.transpose())
+                print z
+                print t
 
-        print "<------------------------/n"
+                print coeff
+                print("SysRis")
+                print sysris.shape
+                print matrix[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1]
+                print("SysRis")
+                ris[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1] = sysris.transpose()
+            else:
+                print("sono entrato nell'else")
+                tempsum = sp.zeros((1,2))
+                for k in range(t+1,z):
+                    tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
+                tnoto = rij - tempsum
+                print("Tempsum(2x2):")
+                print tempsum
+                ujj = selectBlock(z+t,z+t,ris)
+                uii = selectBlock(t,t,ris)
+                coeff = sp.ndarray((4,4), dtype=complex)
+                print uii, ujj
+                coeff[0,0] = uii[0,0]+ujj[0,0]; coeff[0,1] = uii[1,1]; coeff[0,2] = ujj[1,0]; coeff[0,3] = 0
+                coeff[1,0] = uii[1,0]; coeff[1,1] = uii[1,1]+ujj[0,0]; coeff[1,2] = 0; coeff[1,3] = ujj[1,0]
+                coeff[2,0] = ujj[0,1]; coeff[2,1] = 0; coeff[2,2] = uii[0,0]+ujj[1,1]; coeff[2,3] = uii[0,1]
+                coeff[3,0] = 0; coeff[3,1] = ujj[0,1]; coeff[3,2]= uii[1,0]; coeff[3,3]=uii[1,1] + ujj[1,1]
 
+    return ris
+
+
+def innerRoots1(matrix):
+    bb,eb,dims,wb,v,nBlocks = findBlocks0(matrix)
+    ris = diagRoots(matrix)
+    for j in range(1, nBlocks):
+        for i in range (0, nBlocks - j):
+            if(dims[i]==1 and dims[i+j]==1):
+                tnoto = tnotocaso1(i,j,ris)
+                rij = selectBlock(i,i+j,matrix)
+                uii = selectBlock(i,i,ris)
+                ujj = selectBlock(i+j,i+j,ris)
+                ris[bb[i]:eb[i],bb[i+j]:eb[i+j]+1] = (rij - tnoto)/(uii*ujj)
+
+            elif(dims[i]==2 and dims[i+j]==1):
+                tnoto = tnotocaso2(i,j,ris,dims[i],dims[i+j])
+                rij = selectBlock(i,i+j,matrix)
+                uii = selectBlock(i,i,ris)
+                ujj = selectBlock(i+j,i+j,ris)
+                coeff = sp.ndarray((2,2),dtype=complex)
+                coeff[0,0] = uii[0,0] + ujj[0,0]
+                coeff[1,1] = uii[1,1] + ujj[0,0]
+                coeff[1,0] = uii[1,0]
+                coeff[0,1] = uii[0,1]
+                print i,j, ris[bb[i]:eb[i+j],bb[i+j]:eb[i+j]+1]
+                ris[bb[i]:eb[i],bb[i+j]:eb[i+j]+1] = sp.linalg.solve(coeff,rij-tnoto)
+
+            elif(dims[i]==1 and dims[i+j]==2):
+                tnoto = tnotocaso2(i,j,ris,dims[i],dims[i+j])
+                rij = selectBlock(i,i+j,matrix)
+                uii = selectBlock(i,i,ris)
+                ujj = selectBlock(i+j,i+j,ris)
+                coeff = sp.ndarray((2,2), dtype=complex)
+                coeff[0,0] = uii[0,0] + ujj[0,0]
+                coeff[1,1] = uii[0,0] + ujj[1,1]
+                coeff[1,0] = ujj[0,1]
+                coeff[0,1] = ujj[1,0]
+                print "coeff"
+                print coeff
+                print (rij-tnoto).transpose()
+                ris[bb[i]:eb[i],bb[i+j]:eb[i+j]+1] = sp.linalg.solve(coeff.transpose(),(rij-tnoto).transpose())
+
+            elif(dims[i]==2 and dims[i+j]==2):
+                tnoto = tnotocaso2(i,j,ris,dims[i],dims[i+j])
+                rij = selectBlock(i,i+j,matrix)
+                uii = selectBlock(i,i,ris)
+                ujj = selectBlock(i+j,i+j,ris)
+                coeff = sp.ndarray((4,4), dtype=complex)
+                coeff[0,0] = uii[0,0]+ujj[0,0]; coeff[0,1] = uii[1,1]; coeff[0,2] = ujj[1,0]; coeff[0,3] = 0
+                coeff[1,0] = uii[1,0]; coeff[1,1] = uii[1,1]+ujj[0,0]; coeff[1,2] = 0; coeff[1,3] = ujj[1,0]
+                coeff[2,0] = ujj[0,1]; coeff[2,1] = 0; coeff[2,2] = uii[0,0]+ujj[1,1]; coeff[2,3] = uii[0,1]
+                coeff[3,0] = 0; coeff[3,1] = ujj[0,1]; coeff[3,2]= uii[1,0]; coeff[3,3]=uii[1,1] + ujj[1,1]
+                ###############################
+                b = rij-tnoto; bb = sp.ndarray(4); bb[0] = b[0,0]; bb[1] = b[0,1]; bb[2]=b[1,0]; bb[3]=b[1,1]
+                ris[bb[i]:eb[i],bb[i+j]:eb[i+j]+1] = sp.linalg.solve(coeff,bb)
+            else:
+                break
+
+    return ris
+
+
+def tnotocaso2(i,j,matrix,x,y):
+    tnoto = sp.zeros((x,y), dtype=complex)
+    for k in range(i+1,i+j):
+        tnoto += selectBlock(i,k,matrix).dot(selectBlock(k,i+j,matrix))
+    print tnoto
+    return tnoto
+
+
+def tnotocaso1(i,j,matrix):
+    tnoto = 0
+    for k in range(i+1,i+j):
+        tnoto += selectBlock(i,k,matrix).dot(selectBlock(k,i+j,matrix))
+    return tnoto
+
+        #print "<------------------------/n"
+
+
+def selectBlock(m,n,matrix):
+    bb,eb,dims,wb,i,j = findBlocks0(matrix)
+    #print matrix[bb[m]:eb[m]+1,bb[n]:eb[n]+1]
+    return matrix[bb[m]:bb[m]+dims[m],bb[n]:bb[n]+dims[n]]
 
 
 ################################################################################
-
-
 
 
 if __name__ == "__main__":
