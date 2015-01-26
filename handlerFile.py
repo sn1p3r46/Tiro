@@ -42,7 +42,7 @@ def pmof(Matrix,filename=None,path=None):
 
 #Generate Random Integer Square Matrix
 def grism(Size):
-    return np.random.randint(-100, high=100, size=(Size,Size))
+    return np.random.randint(0, high=100, size=(Size,Size))
 
 
 #Generate Random Real Square Matrix

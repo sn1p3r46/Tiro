@@ -124,10 +124,11 @@ def twobytworoot(matrix):
     return ris
 
 def diagRoots(matrix):
-    ris = sp.zeros(shape=matrix.shape,dtype=complex)
+    ris = sp.zeros(shape=matrix.shape)
     bb,eb,dims,wb,i,j = findBlocks0(matrix)
     k=0
     for i in range (0,j):
+        print matrix[k:k+dims[i],k:k+dims[i]]
         ris[k:k+dims[i],k:k+dims[i]] = twobytworoot(matrix[k:k+dims[i],k:k+dims[i]])
         #print(matrix[k:k+dims[i],k:k+dims[i]])
         k += dims[i]
@@ -144,17 +145,13 @@ def innerRoots(matrix):
         for t in range(0,j-z):
             rij = matrix[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1]
             #print rij
-
             #print (rij)
             if (dims[t]==1 and dims[z+t]==1):
                 tempsum = 0
                 tempsum0 = 0
                 for k in range(t+1,z+t):
                     tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
-                    #print ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
-                    #print("...............................")
-                    #print(tempsum)
-                    tempsum0 += selectBlock(t,k,ris).dot(selectBlock(k,z+t,ris))
+
                 print("Tempsum(1x1):")
                 print tempsum
                 tnoto = rij - tempsum
@@ -162,7 +159,7 @@ def innerRoots(matrix):
 
             elif (dims[t]==2 and dims[t+z]==1):
                 tempsum = sp.zeros((2,1))
-                for k in range(t+1,z):
+                for k in range(t+1,t+z):
                     tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
                 print("Tempsum(2x1):")
                 print tempsum
@@ -171,14 +168,15 @@ def innerRoots(matrix):
                 ujj = selectBlock(z+t,z+t,ris)
                 uii = selectBlock(t,t,ris)
                 sysris = sp.ndarray((2,1))
-                coeff = sp.array(uii, dtype=complex)
+                coeff = sp.array(uii)
                 coeff[0,0] += ujj[0,0]
                 coeff[1,1] += ujj[0,0]
                 sysris = np.linalg.solve(coeff,tnoto)
                 ris[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1] = sysris
+
             elif (dims[t]==1 and dims[t+z]==2):
                 tempsum = sp.zeros((1,2))
-                for k in range(t+1,z):
+                for k in range(t+1,t+z):
                     tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
                 #pdb.set_trace()
                 print("Tempsum(1x2):")
@@ -187,16 +185,17 @@ def innerRoots(matrix):
                 ujj = selectBlock(z+t,z+t,ris)
                 uii = selectBlock(t,t,ris)
                 sysris = sp.ndarray((2,1))
-                coeff = sp.zeros((2,2), dtype=complex)
+                coeff = sp.zeros((2,2))
                 print uii[0,0]
                 coeff[0,0] = uii[0,0] + ujj[0,0]
                 coeff[1,1] = uii[0,0] + ujj[1,1]
                 coeff[0,1] = ujj[1,0]
                 coeff[1,0] = ujj[0,1]
                 sysris = np.linalg.solve(coeff,tnoto.transpose())
+                print "tnoto.transpose()"
+                print tnoto.transpose()
                 print z
                 print t
-
                 print coeff
                 print("SysRis")
                 print sysris.shape
@@ -205,21 +204,36 @@ def innerRoots(matrix):
                 ris[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1] = sysris.transpose()
             else:
                 print("sono entrato nell'else")
-                tempsum = sp.zeros((1,2))
-                for k in range(t+1,z):
+                tempsum = sp.zeros((2,2))
+                for k in range(t+1,t+z):
                     tempsum += ris[bb[t]:eb[t]+1,bb[k]:eb[k]+1].dot(ris[bb[k]:eb[k]+1,bb[z+t]:eb[z+t]+1])
                 tnoto = rij - tempsum
+                print tnoto
                 print("Tempsum(2x2):")
                 print tempsum
                 ujj = selectBlock(z+t,z+t,ris)
                 uii = selectBlock(t,t,ris)
-                coeff = sp.ndarray((4,4), dtype=complex)
-                print uii, ujj
-                coeff[0,0] = uii[0,0]+ujj[0,0]; coeff[0,1] = uii[1,1]; coeff[0,2] = ujj[1,0]; coeff[0,3] = 0
+                coeff = sp.ndarray((4,4))
+                print uii
+                print ujj
+                print coeff
+                coeff[0,0] = uii[0,0]+ujj[0,0]; coeff[0,1] = uii[0,1]; coeff[0,2] = ujj[1,0]; coeff[0,3] = 0
                 coeff[1,0] = uii[1,0]; coeff[1,1] = uii[1,1]+ujj[0,0]; coeff[1,2] = 0; coeff[1,3] = ujj[1,0]
                 coeff[2,0] = ujj[0,1]; coeff[2,1] = 0; coeff[2,2] = uii[0,0]+ujj[1,1]; coeff[2,3] = uii[0,1]
                 coeff[3,0] = 0; coeff[3,1] = ujj[0,1]; coeff[3,2]= uii[1,0]; coeff[3,3]=uii[1,1] + ujj[1,1]
-
+                b = rij - tempsum; cc = sp.ndarray((4,1)); cc[0] = b[0,0]; cc[1] = b[1,0]; cc[2]=b[0,1]; cc[3]=b[1,1]
+                print cc
+                print coeff
+                temp = sp.zeros((2,2))
+                FF = sp.linalg.solve(coeff,cc)
+                for k in range(0,2):
+                    for h in range(0,2):
+                        temp[h,k] = FF[2*k+h,0];
+    #                          temp[0,0] = FF[1,0]; temp[0,1] = FF[2,0]; temp[1,0] = FF[1,0];temp[1,1] = FF[3,0]
+                print FF
+                print temp
+                ris[bb[t]:eb[t]+1,bb[t+z]:eb[t+z]+1] = temp
+                #ris[bb[t]:eb[t],bb[t+z]:eb[t+z]+1]
     return ris
 
 
@@ -310,11 +324,11 @@ def selectBlock(m,n,matrix):
 
 if __name__ == "__main__":
     h = grism(10)
-    """
-    T, Z = applySchur(h)
-    pmof(T,"BlockedMatrix.out")
+
+#    T, Z = applySchur(h)
+#    pmof(T,"BlockedMatrix.out")
     #applySchur(gmff("Source.out"))
-    """
+#    """
 
     print "\nImported\n"
     print "###########################"
