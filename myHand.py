@@ -10,9 +10,6 @@ import pdb
 
 def applySchur(SourceMatrix):
     T, Z = sp.linalg.schur(SourceMatrix)
-    #pmof(SourceMatrix,"Source.out")
-    #pmof(T, "Triangular.out")
-    #pmof(Z, "Unitary.out")
     return T,Z
 
 def findBlocks0(matrix):
@@ -323,12 +320,9 @@ def selectBlock(m,n,matrix):
 
 
 if __name__ == "__main__":
-    h = grism(10)
-
+    # h = grism(10)
 #    T, Z = applySchur(h)
 #    pmof(T,"BlockedMatrix.out")
     #applySchur(gmff("Source.out"))
-#    """
-
     print "\nImported\n"
     print "###########################"
