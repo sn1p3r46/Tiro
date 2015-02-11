@@ -37,8 +37,8 @@ def MPDBiteration(M):
 D = MPDBiteration(matr)
 Z = np.ndarray((matr.cols,matr.rows),dtype=np.float)
 
-for i in range(0,M.rows):
-    for j in range(0,M.cols):
+for i in range(0,matr.rows):
+    for j in range(0,matr.cols):
         Z[i,j] = D[i,j]
 
 def DB(M):
@@ -110,15 +110,17 @@ iN = [0]*2
 nw[0],nw[1] = newton(matr1)
 db[0],db[1] = DB(matr1)
 dbpr[0],dbpr[1] = productDB(matr1)
-iN[0],iN[1] = INiteration(matr1)
 
+iN[0],iN[1] = INiteration(matr1)
+"""
 plt.plot(a,iN[1])
+
 plt.plot(a,dbpr[1])
 plt.plot(a,db[1])
 plt.plot(a,nw[1])
 plt.semilogy(t, np.exp(-t/5.0))
 plt.grid(True)
 plt.show()
-
+"""
 
 #[(x,y) for x in range(0,3) for y in range(0,3)]
