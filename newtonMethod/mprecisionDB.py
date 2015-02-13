@@ -20,13 +20,20 @@ matr1 = np.array(
 [  58.26628814,   37.16598947,   59.04033897,   27.90238338, 87.42667939]])
 
 
+
+class result:
+    def __init__(self,iter=0,ris=None, res=[]):
+        self.iter = 0
+        self.ris = 0
+        self.res = []
+
 #Multiple Precision DB Iteration
 
 #@workdps(128)
 def MPDBiteration(M):
     Xk = M.copy()
     Yk = mp.eye(M.cols)
-    for i in range(0,30):
+    for i in range(1,31):
         Xk1 = (Xk + Yk**-1)/2
         Yk1 = (Yk + Xk**-1)/2
         Xk = Xk1
@@ -40,68 +47,96 @@ Z = np.ndarray((matr.cols,matr.rows),dtype=np.float)
 for i in range(0,matr.rows):
     for j in range(0,matr.cols):
         Z[i,j] = D[i,j]
+Z = np.array(MPDBiteration((mp.matrix(matr))).tolist(),dtype=np.float64)
 
-def DB(M):
+
+def DB(M,object=False):
     Xk = np.copy(M)
     Yk = np.eye(M.shape[0])
-    res = []
-    for i in range(0,30):
+    ras = result()
+    for i in range(1,31):
         Xk1 = (Xk + np.linalg.inv(Yk))/2
         Yk1 = (Yk + np.linalg.inv(Xk))/2
         Xk = Xk1
         Yk = Yk1
-        res.append(spl.norm(Xk-Z)/spl.norm(Z))
+        ras.res.append((spl.norm(Xk-Z)/spl.norm(Z)))
+    ras.iter = i
+    ras.ris = Xk
+    return (ras if object else Xk)
 
-    return Xk,res
-
-def newton(M):
+def newton(M,object=False):
     A = np.copy(M)
     X = np.copy(M)
-    res = []
-    for i in range(0,30):
+    ras = result()
+    for i in range(1,31):
         X = 0.5*(X + np.linalg.inv(X).dot(A))
-        res.append(spl.norm(X-Z)/spl.norm(Z))
+        ras.res.append((spl.norm(X-Z)/spl.norm(Z)))
+    ras.iter = i
+    ras.ris = X
 
-    return X,res
+    return (ras if object else X)
 
-def productDB(M):
+def productDB(M,object=False):
     Xk = np.copy(M)
     Mk = np.copy(M)
     I = np.eye(M.shape[0])
-    res = []
-    for i in range(0,30):
+    ras = result()
+    for i in range(1,31):
         Xk = (0.5)*(Xk).dot(I + np.linalg.inv(Mk))
         Mk = (I + ((Mk + np.linalg.inv(Mk))/2))/2
-        res.append(spl.norm(Xk-Z)/spl.norm(Z))
+        ras.res.append((spl.norm(Xk-Z)/spl.norm(Z)))
+    ras.iter = i
+    ras.ris = Xk
+    return (ras if object else Xk)
 
-    return Xk,res
-
-def CRiteration(M):
+def CRiteration(M,object=False):
     I = np.eye(M.shape[0])
     Yk = I - M
     Zk = 2*(I + M)
-    res = []
-    for i in range(0,30):
+    ras = result()
+    for i in range(1,31):
         Yk = ((-Yk.dot(np.linalg.inv(Zk)).dot(Yk)))
         Zk = Zk + 2 * Yk
-        res.append(spl.norm(Zk/4-Z)/spl.norm(Z))
+        ras.res.append((spl.norm(Zk/4-Z)/spl.norm(Z)))
+    ras.iter = i
+    ras.ris = Zk/4
 
-    return Zk,res
+    return (ras if object else Zk/4)
 
-def INiteration(M):
+def INiteration(M,object=False):
     I = np.eye(M.shape[0])
     Xk = np.copy(M)
     Ek = (I - M)/2
-    res = []
-    for i in range(0,30):
+    ras = result()
+    for i in range(1,31):
         Xk = Xk + Ek
         Ek = ((Ek.dot(np.linalg.inv(Xk)).dot(Ek)))/(-2)
-        res.append(spl.norm(Xk-Z)/spl.norm(Z))
+        ras.res.append((spl.norm(Xk-Z)/spl.norm(Z)))
+    ras.iter = i
+    ras.ris = Xk
+    return (ras if object else Xk)
 
-    return Xk,res
+a = np.arange(1,31)
 
-a = np.arange(0,30)
+def plotit():
+    CR = CRiteration(matr1,True)
+    IN = INiteration(matr1,True)
+    pDB = productDB(matr1,True)
+    NW = newton(matr1,True)
+    DB1 = DB(matr1,True)
 
+    plt.yscale('log')
+    plt.plot(range(0,CR.iter),CR.res, color='blue', lw=2, label="CR")
+    plt.plot(range(0,IN.iter),IN.res, color='red', lw=2, label="IN")
+    plt.plot(range(0,pDB.iter),pDB.res, color='green', lw=2, label="DB Product")
+    plt.plot(range(0,DB1.iter),DB1.res, color='brown', lw=2, label="DB")
+    plt.plot(range(0,NW.iter),NW.res, color='orange', lw=2, label="Newton")
+    plt.legend(loc='upper right')
+    plt.show()
+
+print Z
+
+"""
 nw = [0]*2
 db = [0]*2
 dbpr = [0]*2
@@ -112,7 +147,8 @@ db[0],db[1] = DB(matr1)
 dbpr[0],dbpr[1] = productDB(matr1)
 
 iN[0],iN[1] = INiteration(matr1)
-"""
+
+
 plt.plot(a,iN[1])
 
 plt.plot(a,dbpr[1])
@@ -122,5 +158,6 @@ plt.semilogy(t, np.exp(-t/5.0))
 plt.grid(True)
 plt.show()
 """
+
 
 #[(x,y) for x in range(0,3) for y in range(0,3)]

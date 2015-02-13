@@ -3,13 +3,13 @@ import scipy.linalg as spl
 from mpmath import mp,workdps
 import matplotlib.pyplot as plt
 from mprecisionDB import DB
-from mprecisionDB import MPDBiteration,matr,matr1
+from mprecisionDB import MPDBiteration,matr,matr1,productDB,CRiteration
 
 class result:
-    def __init__(self,iter=0,ris=None,res=[]):
-        self.iter = iter
-        self.ris = ris
-        self.res = res
+    def __init__(self,iter=0,ris=None, res=[]):
+        self.iter = 0
+        self.ris = 0
+        self.res = []
 
 def MPDBsc(M):
     Xk = M.copy()
@@ -29,20 +29,20 @@ def NWsc(M, object=False):
     W = np.array(MPDBsc((mp.matrix(M))).tolist(),dtype=np.float64)
     X = np.copy(M)
     dM = spl.det(M)**(1.0/2)
-    res = result()
+    ras = result()
     for i in range(1,31):
         uk = np.abs(spl.det(X)/dM)**(-1.0/i)
         X = (0.5)*(uk*X + (uk**(-1))*spl.inv(X).dot(M))
-        res.res.append(spl.norm(X-W)/spl.norm(W))
-    res.iter = i
-    res.ris = X
+        ras.res.append((spl.norm(X-W)/spl.norm(W)))
+    ras.iter = i
+    ras.ris = X
 
-    return (res if object else X)
+    return (ras if object else X)
 
 
 def DBsc(M, object=False):
     W = np.array(MPDBsc((mp.matrix(M))).tolist(),dtype=np.float64)
-    res = result()
+    ras = result()
     Xk = np.copy(M)
     Yk = np.eye(M.shape[0])
     dA = spl.det(M)**(1.0/2)
@@ -52,15 +52,15 @@ def DBsc(M, object=False):
         Yk1 = (Yk*uk + (uk**-1)*np.linalg.inv(Xk))/2
         Xk = Xk1
         Yk = Yk1
-        res.res.append(spl.norm(Xk-W)/spl.norm(W))
-    res.iter = i
-    res.ris = Xk
+        ras.res.append((spl.norm(Xk-W)/spl.norm(W)))
+    ras.iter = i
+    ras.ris = Xk
 
-    return (res if object else Xk)
+    return (ras if object else Xk)
 
 def productDBsc(A, object=False):
     W = np.array(MPDBsc((mp.matrix(A))).tolist(),dtype=np.float64)
-    res = result()
+    ras = result()
     M = np.copy(A)
     Xk = np.copy(A)
     Yk = np.eye(A.shape[0])
@@ -70,11 +70,11 @@ def productDBsc(A, object=False):
         Xk = (0.5)*(uk)*(Xk).dot(I + ((uk**-2)*(np.linalg.inv(M))))
         Yk = (0.5)*(uk)*(Yk).dot(I + ((uk**-2)*(np.linalg.inv(M))))
         M  = (0.5)*( I + ((uk**2)*M + ((uk**-2)*np.linalg.inv(M)))/2.0)
-        res.res.append(spl.norm(Xk-W)/spl.norm(W))
-    res.iter = i
-    res.ris = Xk
+        ras.res.append(spl.norm(Xk-W)/spl.norm(W))
+    ras.iter = i
+    ras.ris = Xk
 
-    return (res if object else Xk)
+    return (ras if object else Xk)
 
 """
 def INsc1(A):
@@ -90,3 +90,16 @@ def INsc1(A):
         E = (-0.5)*(E.dot(spl.inv(X))).dot(E)
     return X
 """
+
+
+def plottamelo():
+    a = np.arange(0,30)
+    nw = NWsc(matr1,True)
+    db = DBsc(matr1,True)
+    dbPR = productDBsc(matr1,True)
+    plt.yscale('log')
+    plt.plot(range(0,nw.iter),nw.res, color='blue', lw=2, label="Newton Sclaled")
+    plt.plot(range(0,db.iter),db.res, color='red', lw=2, label="DB Sclaled")
+    plt.plot(range(0,dbPR.iter),dbPR.res, color='green', lw=2, label="DB Product Sclaled")
+    plt.legend(loc='upper right')
+    plt.show()
