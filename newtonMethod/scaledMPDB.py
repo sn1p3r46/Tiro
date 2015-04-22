@@ -76,7 +76,7 @@ def productDBsc(A, object=False):
 
     return (ras if object else Xk)
 
-"""
+
 def INsc1(A):
     X = np.copy(A)
     E = 0.5*(np.eye(A.shape[0])-A)
@@ -89,8 +89,9 @@ def INsc1(A):
         X = uk*X + Etk
         E = (-0.5)*(E.dot(spl.inv(X))).dot(E)
     return X
-"""
 
+    
+"""
 
 def plottamelo():
     a = np.arange(0,30)
@@ -103,3 +104,4 @@ def plottamelo():
     plt.plot(range(0,dbPR.iter),dbPR.res, color='green', lw=2, label="DB Product Sclaled")
     plt.legend(loc='upper right')
     plt.show()
+"""
