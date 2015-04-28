@@ -6,8 +6,6 @@ from handlerFile import *
 from os.path import expanduser
 import pdb
 
-
-
 def applySchur(SourceMatrix):
     T, Z = sp.linalg.schur(SourceMatrix)
     return T,Z
