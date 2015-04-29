@@ -88,8 +88,8 @@ def block_structure5(T):
     """
     computes the block structure of the upper quasi-triangular matrix T
     m is the number of diagonal blocks
-    fb is the array containing the begin of each block
-    fe is the array containing the end of each block + 1
+    bb is the array containing the begin of each block
+    eb is the array containing the end of each block + 1
     s is an array containing the sizes of the diagonal blocks
     """
     n = len(T)
