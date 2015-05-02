@@ -236,4 +236,10 @@ def timeTest2(ii=1,dimensione=10240):
         print Err
         print Err1
 
+def matriceacaso(dimensione):
+    return scipy.random.rand(dimensione,dimensione)
+    T,Z = sp.linalg.schur(scipy.random.rand(dimensione,dimensione))
+    
+    aggiustala(T)
+    return T
 #print min(sp.linalg.eigvals(T))

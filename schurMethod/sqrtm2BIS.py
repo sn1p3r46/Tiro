@@ -13,7 +13,8 @@ import time
 execfile("myHand.py")
 execfile("aggiustala.py")
 
-def realSchurNonBlocked(M):
+def realSchurNonBlocked(Matrix):
+    M,T = sp.linalg.schur(Matrix)
     m, fb, fe, s = block_structure(M) #computes the block Structure
     n = M.shape[0]
     ris = sp.zeros((n,n))
@@ -35,7 +36,7 @@ def realSchurNonBlocked(M):
                 Ujj = ris[fb[i+j]:fe[i+j],fb[i+j]:fe[i+j]]
                 shapeUii = Uii.shape[0]
                 shapeUjj = Ujj.shape[0]
-                x, scale, info = dtrsyl(Uii, Ujj, Tnoto) #solve the slvester equation
+                x, scale, info = dtrsyl(Uii, Ujj, Tnoto) #call fortran and solve the slvester equation
                 ris[fb[i]:fe[i],fb[i+j]:fe[i+j]] = x * scale
     return ris
 
@@ -101,6 +102,14 @@ def block_structure(T):
     return m, fb, fe, s
 
 
+def timeTestRealSchur(M):
+    I = time.clock()
+    Res = realSchurNonBlocked(M)
+    F = time.clock()
+    DELTA = F - I
+    ERR = sp.linalg.norm(Res.dot(Res) - M)/sp.linalg.norm(M)
+
+    return DELTA,ERR
 
 B = scipy.random.randint(-100,100,(10,10))
 print "\nCreo matrice B"

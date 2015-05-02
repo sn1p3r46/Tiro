@@ -41,3 +41,12 @@ if __name__ == "__main__":
     print sp.linalg.norm(matrice.dot(matrice)-A)
     print (matrice.dot(matrice)-A).max()
     print (matrice.dot(matrice)-A)
+
+def timeTestComplexSchur(M):
+    I = time.clock()
+    Res = complexSchur(M)
+    F = time.clock()
+    DELTA = F - I
+    ERR = sp.linalg.norm(Res.dot(Res) - M)/sp.linalg.norm(M)
+
+    return DELTA,ERR
