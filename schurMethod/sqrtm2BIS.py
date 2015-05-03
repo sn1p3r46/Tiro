@@ -8,27 +8,22 @@ import scipy as sp
 import scipy.linalg
 import time
 
+#execfile("myHand.py")
+#execfile("aggiustala.py")
 
-
-execfile("myHand.py")
-execfile("aggiustala.py")
 
 def realSchurNonBlocked(Matrix):
-    M,T = sp.linalg.schur(Matrix)
-    m, fb, fe, s = block_structure(M) #computes the block Structure
-    n = M.shape[0]
-    ris = sp.zeros((n,n))
+    ris,Z = sp.linalg.schur(Matrix)
+    m, fb, fe, s = block_structure(ris) #computes the block Structure
     for i in range(0,m):
-        ris[fb[i]:fe[i],fb[i]:fe[i]] = tbtroot(M[fb[i]:fe[i],fb[i]:fe[i]])
-
+        ris[fb[i]:fe[i],fb[i]:fe[i]] = tbtroot(ris[fb[i]:fe[i],fb[i]:fe[i]])
     for j in range(1,m):
         for i in range(0,m-j):
-            Tnoto = sp.copy(M[fb[i]:fe[i],fb[i+j]:fe[i+j]]) #dopo togliere il copy
-
+            Tnoto = sp.copy(ris[fb[i]:fe[i],fb[i+j]:fe[i+j]])
             for k in range(i+1,i+j):
                 Tnoto -= (ris[fb[i]:fe[i],fb[k]:fe[k]]).dot(ris[fb[k]:fe[k],fb[j+i]:fe[j+i]])
 
-            if((M[fb[i]:fe[i],fb[i+j]:fe[i+j]]).shape==(1,1)):
+            if((ris[fb[i]:fe[i],fb[i+j]:fe[i+j]]).shape==(1,1)):
                 ris[fb[i]:fe[i],fb[i+j]:fe[i+j]] = Tnoto/(ris[fb[i]:fe[i],fb[i]:fe[i]] + ris[fb[i+j]:fe[i+j],fb[i+j]:fe[i+j]])
 
             else:
@@ -38,6 +33,8 @@ def realSchurNonBlocked(Matrix):
                 shapeUjj = Ujj.shape[0]
                 x, scale, info = dtrsyl(Uii, Ujj, Tnoto) #call fortran and solve the slvester equation
                 ris[fb[i]:fe[i],fb[i+j]:fe[i+j]] = x * scale
+
+    ris = (Z).dot(ris).dot((Z).T)
     return ris
 
 
@@ -57,7 +54,7 @@ def tbtroot(matrix):
     if (matrix.shape[0]==2):
         a = gev(matrix)
         a = csr2(a).real
-        a = sp.sqrt(sp.linalg.eigvals(matrix)[0]).real
+        #a = sp.sqrt(sp.linalg.eigvals(matrix)[0]).real
         ris=sp.ndarray(shape=(2,2))
         ris[0,0] = a + (1/(4*a))*(matrix[0,0] - matrix[1,1])
         ris[1,1] = a - (1/(4*a))*(matrix[0,0] - matrix[1,1])
@@ -110,6 +107,10 @@ def timeTestRealSchur(M):
     ERR = sp.linalg.norm(Res.dot(Res) - M)/sp.linalg.norm(M)
 
     return DELTA,ERR
+"""
+
+execfile("myHand.py")
+execfile("aggiustala.py")
 
 B = scipy.random.randint(-100,100,(10,10))
 print "\nCreo matrice B"
@@ -121,3 +122,4 @@ aggiustala(T)
 DD = realSchurNonBlocked(T)
 
 print sp.linalg.norm(DD.dot(DD)-T)/sp.linalg.norm(T)
+"""
