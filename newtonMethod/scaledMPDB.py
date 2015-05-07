@@ -77,31 +77,37 @@ def productDBsc(A, object=False):
     return (ras if object else Xk)
 
 
-def INsc1(A):
+def INsc1(A, object=False):
     X = np.copy(A)
     E = 0.5*(np.eye(A.shape[0])-A)
     dA = spl.det(A)**(0.5)
+    ras = result()
+    W = np.array(MPDBsc((mp.matrix(A))).tolist(),dtype=np.float64)
     for i in range (1,31):
         print i
         detX =  spl.det(X)
         uk = np.abs(detX/dA)**(-1.0/i)
         Etk = (uk**(-1))*(E + (0.5*X)) - (0.5)*uk*X
         X = uk*X + Etk
-        E = (-0.5)*(E.dot(spl.inv(X))).dot(E)
-    return X
+        E = (-0.5)*(Etk.dot(spl.inv(X))).dot(Etk)
+        ras.res.append(spl.norm(X-W)/spl.norm(W))
+    ras.iter = i
+    ras.ris = X
+    return (ras if object else X)
 
-    
-"""
 
-def plottamelo():
+
+
+def plottamelo1():
     a = np.arange(0,30)
     nw = NWsc(matr1,True)
     db = DBsc(matr1,True)
     dbPR = productDBsc(matr1,True)
+    INsc = INsc1(matr1,True)
     plt.yscale('log')
     plt.plot(range(0,nw.iter),nw.res, color='blue', lw=2, label="Newton Sclaled")
     plt.plot(range(0,db.iter),db.res, color='red', lw=2, label="DB Sclaled")
     plt.plot(range(0,dbPR.iter),dbPR.res, color='green', lw=2, label="DB Product Sclaled")
+    plt.plot(range(0,INsc.iter),dbPR.res, color='orange', lw=2, label="IN Sclaled")
     plt.legend(loc='upper right')
     plt.show()
-"""
