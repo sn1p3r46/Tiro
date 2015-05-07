@@ -91,6 +91,7 @@ def INsc1(A, object=False):
         X = uk*X + Etk
         E = (-0.5)*(Etk.dot(spl.inv(X))).dot(Etk)
         ras.res.append(spl.norm(X-W)/spl.norm(W))
+        print ras.res
     ras.iter = i
     ras.ris = X
     return (ras if object else X)
@@ -108,6 +109,6 @@ def plottamelo1():
     plt.plot(range(0,nw.iter),nw.res, color='blue', lw=2, label="Newton Sclaled")
     plt.plot(range(0,db.iter),db.res, color='red', lw=2, label="DB Sclaled")
     plt.plot(range(0,dbPR.iter),dbPR.res, color='green', lw=2, label="DB Product Sclaled")
-    plt.plot(range(0,INsc.iter),dbPR.res, color='orange', lw=2, label="IN Sclaled")
+    plt.plot(range(0,INsc.iter),INsc.res, color='orange', lw=2, label="IN Sclaled")
     plt.legend(loc='upper right')
     plt.show()
