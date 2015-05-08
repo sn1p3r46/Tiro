@@ -28,10 +28,11 @@ def timeTestCap2(MATRICE,dim):
     ErrReal = []
     ErrComplex =[]
     DIMS = []
-    for i in range(0,dim):
-        print Di
-        DIMS.append(Dim)
-        M = MATRICE[0:Dim,0:Dim]
+    Dim
+    for i in [10,20,40,80,160,320,640,900,1280,1700,2000,2560]:
+        print i 
+        DIMS.append(i)
+        M = MATRICE[0:i,0:i]
 
         I = time.clock()
         Res = realSchurNonBlocked(M)
@@ -51,8 +52,8 @@ def timeTestCap2(MATRICE,dim):
     print TimeReal
     print TimeComplex
 
-    np.savetxt(home + workspace + folder + "TimeReal"+str(dim)+".tt", TimeReal)
-    np.savetxt(home + workspace + folder + "TimeComplex"+str(dim)+".tt", TimeComplex)
-    np.savetxt(home + workspace + folder + "ErrReal"+str(dim)+".tt", ErrReal)
-    np.savetxt(home + workspace + folder + "ErrComplex"+str(dim)+".tt", ErrComplex)
-    np.savetxt(home + workspace + folder + "DIMS"+str(dim)+".tt", DIMS)
+    np.savetxt(home + workspace + folder + "__TimeReal"+str(9)+".tt", TimeReal)
+    np.savetxt(home + workspace + folder + "__TimeComplex"+str(9)+".tt", TimeComplex)
+    np.savetxt(home + workspace + folder + "__ErrReal"+str(9)+".tt", ErrReal)
+    np.savetxt(home + workspace + folder + "__ErrComplex"+str(9)+".tt", ErrComplex)
+    np.savetxt(home + workspace + folder + "__DIMS"+str(9)+".tt", DIMS)

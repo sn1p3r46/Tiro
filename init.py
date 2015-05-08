@@ -136,16 +136,16 @@ def timeTest1(ii,jj):
 
     FI = F - I
 
-# il seguente output e' incentrato a verificare se ci sono cambiamenti a livello di tempo al variare delle dimensioni dei blocchi grandi insiame alle matrici
-# ogni colonna contiene il tempo al variare dei blocchi sulla matrice,
-# mentre ogni riga aumenta la dimensione della matrice in ordine quadratico;
-# min e max time  invece misurano il massimo cambiamento di tempo per ogni riga, per vedere con deltatime poi se effettivamente la dimensione dei blocchi conta ai fini della velocita.
+    # il seguente output e' incentrato a verificare se ci sono cambiamenti a livello di tempo al variare delle dimensioni dei blocchi grandi insiame alle matrici
+    # ogni colonna contiene il tempo al variare dei blocchi sulla matrice,
+    # mentre ogni riga aumenta la dimensione della matrice in ordine quadratico;
+    # min e max time  invece misurano il massimo cambiamento di tempo per ogni riga, per vedere con deltatime poi se effettivamente la dimensione dei blocchi conta ai fini della velocita.
 
     np.savetxt(home + workspace + ttestBlocks + "TimeStart"+str(ii)+".tt", I, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' inizio del calcolo per sqrtm5()')
     np.savetxt(home + workspace + ttestBlocks + "TimeEnd"+str(ii)+".tt", F, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' fine del calcolo per sqrtm5()')
     np.savetxt(home + workspace + ttestBlocks + "DeltaTime"+str(ii)+".tt", (F-I), fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' Tempo realmente impiegato da sqrtm5,\n il numero ii indica la dim della matrice come 10*2^ii con ii che va da 0 a ii')
     np.savetxt(home + workspace + ttestBlocks + "dimensionematricigenerate"+str(ii)+".tt", dims, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' dim delle matrici su cui sono effettuati i calcoli')
-#   np.savetxt(home + workspace + ttestBlocks + "ErrRelativo"+str(ii)+".tt", Err, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' Errore Relativo Per ogni matrice')
+    #np.savetxt(home + workspace + ttestBlocks + "ErrRelativo"+str(ii)+".tt", Err, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' Errore Relativo Per ogni matrice')
     np.savetxt(home + workspace + ttestBlocks + "MaxTime" +str(ii)+".tt", np.amax(FI, axis=1), fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' tempo massimo al variare delle dims dei blocchi per ogni matrice')
     np.savetxt(home + workspace + ttestBlocks + "MinTime" +str(ii)+".tt", np.amin(FI, axis=1), fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' tempo minimo al variare delle dimens dei blocchi per ogni matrice')
     np.savetxt(home + workspace + ttestBlocks + "DeltaTime"+ str(ii)+".tt", (np.amax(FI, axis=1) - np.amin(FI, axis=1)) , fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', comments=' differenza tra il tempo massimo ed il tempo minimo per ogni matrice')
@@ -239,7 +239,36 @@ def timeTest2(ii=1,dimensione=10240):
 def matriceacaso(dimensione):
     return scipy.random.rand(dimensione,dimensione)
     T,Z = sp.linalg.schur(scipy.random.rand(dimensione,dimensione))
-    
+
     aggiustala(T)
     return T
 #print min(sp.linalg.eigvals(T))
+
+
+def timeTest3():
+    MATRICE = sp.loadtxt("IOFiles/BigBlockMatrix5000.out")
+    TimeReal=[]
+    TimeComplex =[]
+    ErrReal = []
+    ErrComplex =[]
+    DIMS = [10,20,40,80,160,320,640,900,1280,1700,2000,2560]
+    print "inizio"
+    for i in range(0,len(DIMS)):
+        M = MATRICE[0:DIMS[i],0:DIMS[i]]
+        print DIMS[i]
+        I = time.clock()
+        Res = sqrtm5(M,10)
+        F = time.clock()
+        TimeReal.append(F - I)
+        ErrReal.append(sp.linalg.norm(Res.dot(Res) - M)/sp.linalg.norm(M))
+        I = time.clock()
+        Res = sp.linalg.sqrtm(M)
+        F = time.clock()
+        TimeComplex.append(F - I)
+        ErrComplex.append(sp.linalg.norm(Res.dot(Res) - M)/sp.linalg.norm(M))
+
+    np.savetxt(home + workspace + ttest + "__TimeReal"+str(9)+".tt", TimeReal)
+    np.savetxt(home + workspace + ttest + "__TimeComplex"+str(9)+".tt", TimeComplex)
+    np.savetxt(home + workspace + ttest + "__ErrReal"+str(9)+".tt", ErrReal)
+    np.savetxt(home + workspace + ttest + "__ErrComplex"+str(9)+".tt", ErrComplex)
+    np.savetxt(home + workspace + ttest + "__DIMS"+str(9)+".tt", DIMS)
