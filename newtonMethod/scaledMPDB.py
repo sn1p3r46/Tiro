@@ -33,6 +33,7 @@ def NWsc(M, object=False):
     for i in range(1,31):
         uk = np.abs(spl.det(X)/dM)**(-1.0/i)
         X = (0.5)*(uk*X + (uk**(-1))*spl.inv(X).dot(M))
+        print (spl.norm(X-W)/spl.norm(W))
         ras.res.append((spl.norm(X-W)/spl.norm(W)))
     ras.iter = i
     ras.ris = X
@@ -95,8 +96,6 @@ def INsc1(A, object=False):
     ras.iter = i
     ras.ris = X
     return (ras if object else X)
-
-
 
 
 def plottamelo1():

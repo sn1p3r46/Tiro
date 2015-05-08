@@ -56,12 +56,3 @@ def timeTestCap2(MATRICE,dim):
     np.savetxt(home + workspace + folder + "ErrReal"+str(dim)+".tt", ErrReal)
     np.savetxt(home + workspace + folder + "ErrComplex"+str(dim)+".tt", ErrComplex)
     np.savetxt(home + workspace + folder + "DIMS"+str(dim)+".tt", DIMS)
-
-
-
-
-def rarra(cicli):
-    Dim = 10
-    for i in  range(0,cicli):
-        print Dim
-        Dim = Dim*2
