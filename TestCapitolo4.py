@@ -11,7 +11,7 @@ DeltaTime = TimeEnd - TimeStart
 
 
 
-########################---- TEST GRANDEZZA BLOCCHI ----##############################
+########################    ---- TEST GRANDEZZA BLOCCHI ----    ##############################
 
 def plotBlocchi():
     TimeStart = np.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/ttestBlocks/TimeStart9.tt")
@@ -51,6 +51,8 @@ def plotBlocchi():
     plt.ylabel("Time")
     plt.legend(loc='upper left')
     #plt.show()
+    print np.amin(DeltaTime[8])
+    print np.amax(DeltaTime[8])
 
     plt.plot(range(0,DeltaTime.shape[1]),DeltaTime[6],color="black",label="Matr dim: 640",lw=2)
     plt.xlabel("Blocks Dimension")
@@ -96,7 +98,7 @@ def plotfinal():
     plt.legend(loc='upper left')
     plt.show()
 
-    plt.xlabel("Matrix Dimension")
+    plt.xlabel("Matrix Dimension") #######REAL non Blocked vs Complex ScyPy
     plt.ylabel("Time Sec.")
     DeltatimeReal = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/TestCapitolo2/Final9/__TimeReal9.tt")
     plt.plot(MatrixDims,DeltatimeReal, color="black",label="Real Schur", lw=2)
@@ -107,6 +109,29 @@ def plotfinal():
     plt.legend(loc='upper left')
     plt.show()
 
+
+    #######COMPLEX POINT non Blocked vs Complex ScyPy  TIME
+    plt.xlabel("Matrix Dimension")
+    plt.ylabel("Time Sec.")
+    DeltatimeComplexSciPy = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/ttest/Final9/__TimeComplex9.tt")
+    plt.plot(MatrixDims,DeltatimeComplexSciPy, color="grey",label="SciPy Complex Schur", lw=2)
+    DeltatimeComplexCHAP2 = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/TestCapitolo2/Final9/__TimeComplex9.tt")
+    plt.plot(MatrixDims,DeltatimeComplexCHAP2, color="black",label="Point Complex Schur", lw=2)
+    plt.title("Complex Point Method vs SciPy Blocked Complex Method ")
+    plt.legend(loc='upper left')
+    plt.show()
+
+    """
+    plt.xlabel("Matrix Dimension")
+    plt.ylabel("Relative Error")
+    ErrComplexSciPy = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/ttest/Final9/__ErrComplex9.tt")
+    ErrComplexCHAP2 = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/TestCapitolo2/Final9/__ErrComplex9.tt")
+    plt.plot(MatrixDims,ErrComplexSciPy, color="grey",label="SciPy Complex Schur", lw=2)
+    plt.plot(MatrixDims,ErrComplexCHAP2, color="black",label="Point Complex Schur", lw=2)
+    plt.title("Complex Point Method vs SciPy Blocked Complex Method Error")
+    plt.legend(loc='upper left')
+    plt.show()
+    """
 
     ####################################################################################
     ###########       CAPITOLO 2    ####################################################
@@ -139,7 +164,6 @@ def plotfinal():
 
     DeltatimeReal = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/TestCapitolo2/Final9/__TimeReal9.tt")
     DeltatimeComplex = sp.loadtxt("/home/GFZNAS01/homes/galloni/Tiro/IOFiles/TestCapitolo2/Final9/__TimeComplex9.tt")
-
     plt.plot(MatrixDims,DeltatimeReal, color="red",label="Real Schur", lw=2)
     plt.plot(MatrixDims,DeltatimeComplex, color="blue",label="Complex Schur", lw=2)
     plt.title("Time Tests Real vs Schur")

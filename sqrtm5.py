@@ -5,7 +5,7 @@ from scipy import linalg
 from scipy.linalg.lapack import ztrsyl, dtrsyl
 
 
-def sqrtm5(X,blocksize=3):
+def sqrtm5(X,blocksize=10):
     M,Z = sp.linalg.schur(X)
     m, fb, fe, s = block_structure5(M)
     n = len(M)
@@ -24,7 +24,6 @@ def sqrtm5(X,blocksize=3):
         stop.append(i)
 
     for i in range(0,len(start)):
-        #print M[start[i]:stop[i],start[i]:stop[i]]
         tr_sqrtm5(M[start[i]:stop[i],start[i]:stop[i]])
 
     for j in range(1,len(start)):
@@ -33,7 +32,6 @@ def sqrtm5(X,blocksize=3):
             Rjj =  M[start[j+i]:stop[j+i],start[j+i]:stop[j+i]]
             S = M[start[i]:stop[i],start[j+i]:stop[j+i]]
             if(j>1):
-                #print "---------------------------------------------"
                 S = S - (M[start[i]:stop[i],stop[i]:start[j+i]]).dot(
                     M[stop[i]:start[j+i],start[j+i]:stop[j+i]])
 
@@ -61,9 +59,6 @@ def tr_sqrtm5(M):
                 M[fb[i]:fe[i],fb[JJ]:fe[JJ]] = Tnoto/(M[fb[i]:fe[i],fb[i]:fe[i]] + M[fb[JJ]:fe[JJ],fb[JJ]:fe[JJ]])
 
             else:
-                #print Tnoto
-                #print fb,fe
-                #print M
                 Uii = M[fb[i]:fe[i],fb[i]:fe[i]]
                 Ujj = M[fb[JJ]:fe[JJ],fb[JJ]:fe[JJ]]
                 x, scale, info = dtrsyl(Uii, Ujj, Tnoto)
