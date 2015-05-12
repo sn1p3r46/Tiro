@@ -111,3 +111,17 @@ def plottamelo1():
     plt.plot(range(0,INsc.iter),INsc.res, color='orange', lw=2, label="IN Sclaled")
     plt.legend(loc='upper right')
     plt.show()
+
+
+def productDBsc(A,i):
+    M = np.copy(A)
+    Xk = np.copy(A)
+    Yk = np.eye(A.shape[0])
+    I = np.eye(M.shape[0])
+    for i in range(1,i):
+        uk = np.abs(spl.det(M))**(-1.0/(2*i))
+        Xk = (0.5)*(uk)*(Xk).dot(I + ((uk**-2)*(np.linalg.inv(M))))
+        Yk = (0.5)*(uk)*(Yk).dot(I + ((uk**-2)*(np.linalg.inv(M))))
+        M  = (0.5)*( I + ((uk**2)*M + ((uk**-2)*np.linalg.inv(M)))/2.0)
+
+    return Xk, Yk
